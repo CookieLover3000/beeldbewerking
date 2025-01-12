@@ -15,7 +15,6 @@ import numpy as np
 
 ring_of_bout_array = []
 schroef_of_spijker_array = []
-isChild_array = []
 
 shouldSaveImage = False
 
@@ -109,19 +108,26 @@ while camera.IsGrabbing():
 
 
         for i, h in enumerate(hierarchy[0]):
-            if h[2] != -1:
-                ring_of_bout_array.append(i)
+            if h[3] != -1:
+               ring_of_bout_array.append(i)
             elif h[3] == -1 and h[2] == -1:
                 schroef_of_spijker_array.append(i)
-            else:
-                isChild_array.append(i)
+            # else:
+            #     isChild_array.append(i)
 
-        # !!!!!! Didn´t work because it doesn´t work with objects that aren´t vertical or horizontal !!!!!!!!!!!!
-        # Loop over contours and draw bounding boxes
-        # for contour in contours:
-        #     # Get the bounding box for each contour
-        #     x, y, w, h = cv2.boundingRect(contour)
-        #     cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 0), 3)
+        # end Pattern recongition 1, continue with Feature extraction
+
+        spijkerAmount = 0
+        schroefAmount = 0
+        ringAmount = 0
+        boutAmount = 0
+
+            # !!!!!! Didn´t work because it doesn´t work with objects that aren´t vertical or horizontal !!!!!!!!!!!!
+            # Loop over contours and draw bounding boxes
+            # for contour in contours:
+            #     # Get the bounding box for each contour
+            #     x, y, w, h = cv2.boundingRect(contour)
+            #     cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 0), 3)
 
         for i, contour in enumerate(contours):
             # Get the rotated bounding box for each contour using minAreaRect
@@ -137,39 +143,61 @@ while camera.IsGrabbing():
             # Draw the rotated bounding box (rectangle) using polylines
             cv2.drawContours(imS, [box], 0, (0,255,0), 3)
 
+            x, y, w, h = cv2.boundingRect(contour)
+            # cv2.rectangle(imS, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
             if side1 > side2:
                 aspect_ratio = side2 / side1
             else:
                 aspect_ratio = side1 / side2
             print(f"aspect ratio {i}: {aspect_ratio}")
 
-            # Put the width and height text above the bounding boxzxpain
+            # Pattern Recognition
+
             text = None
             if i in ring_of_bout_array:
-                text = f"ring of bout: {i}"
                 area = cv2.contourArea(contour)
+                if area > 4000:
+                    text = f"ring: {i}"
+                    ringAmount += 1
+                elif area > 2000:
+                    text = f"bout: {i}"
+                    boutAmount += 1
+
                 print(f"Contour {i} area: {area}")
+
+            # Detect schroef en spijker
             elif i in schroef_of_spijker_array:
-                text = f"schroef of spijker: {i}"
-            cv2.putText(imS, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+                # Spijker
+                if aspect_ratio < 0.1:
+                    spijkerAmount += 1
+                    text = f"spijker: {i}"    
+                # Schroef
+                elif aspect_ratio < 0.4:
+                    schroefAmount += 1
+                    text = f"schroef: {i}"
 
-            # if i in isChild_array:
-            #     area = cv2.contourArea(contour)
-            #     print(f"Contour {i} area: {area}")
+            # Display text in center of rectangle around item.
+            center_x = x + w // 2
+            center_y = y + h // 2
 
-            # Print hierarchy information
-            # print(f"Contour {i} hierarchy: {hierarchy[0][i]}")
-            print(f"moer of ring: {len(ring_of_bout_array)}")
-            print (f"schroef of spijker: {len(schroef_of_spijker_array)}")
+            (text_width, text_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
 
+            text_x = center_x - text_width // 2
+            text_y = center_y + text_height // 2
 
+            cv2.putText(imS, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, .8, (0, 0, 255), 2, cv2.LINE_AA)
 
-        ring_of_bout_array = []
-        schroef_of_spijker_array = []
         # Display the image with bounding boxes
         cv2.imshow('Bounding Boxes', imS)
 
+        print(f"spijker amount: {spijkerAmount}")
+        print(f"schroef amount: {schroefAmount}")
+        print(f"bout amount: {boutAmount}")
+        print(f"ring amount: {ringAmount}")
 
+        ring_of_bout_array = []
+        schroef_of_spijker_array = []
 
 
         # press esc (ascii 27) to exit

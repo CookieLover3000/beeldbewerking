@@ -10,6 +10,7 @@ import os
 ring_of_bout_array = []
 schroef_of_spijker_array = []
 isChild_array = []
+schroef_spijker_aspect_ratios = {}
 
 def apply_laplacian_filter(img):
     laplacian = cv2.Laplacian(img, cv2.CV_64F)
@@ -17,8 +18,9 @@ def apply_laplacian_filter(img):
     return sharp
 
 def capture_image():
-    img = cv2.imread('output_image.bmp')
+    # img = cv2.imread('output_image.bmp')
     # img = cv2.imread('Image__2024-12-05__13-31-30.bmp')
+    img = cv2.imread('image.png')
 
     # imS = cv2.resize(img, ((int)(2592/3),
     #                            (int)(1944/3)))
@@ -53,15 +55,22 @@ def capture_image():
     cv2.drawContours(imS, contours, -1, (255,0,0), 1)
     # print(f"hierarchy: {hierarchy}")
 
+    # Pattern recognition 1
+
     for i, h in enumerate(hierarchy[0]):
-        if h[2] != -1:
+        if h[3] != -1:
            ring_of_bout_array.append(i)
         elif h[3] == -1 and h[2] == -1:
             schroef_of_spijker_array.append(i)
-        else:
-            isChild_array.append(i)
+        # else:
+        #     isChild_array.append(i)
 
+    # end Pattern recongition 1, continue with Feature extraction
 
+    spijkerAmount = 0
+    schroefAmount = 0
+    ringAmount = 0
+    boutAmount = 0
 
         # !!!!!! Didn´t work because it doesn´t work with objects that aren´t vertical or horizontal !!!!!!!!!!!!
         # Loop over contours and draw bounding boxes
@@ -85,7 +94,7 @@ def capture_image():
         cv2.drawContours(imS, [box], 0, (0,255,0), 3)
 
         x, y, w, h = cv2.boundingRect(contour)
-        cv2.rectangle(imS, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        # cv2.rectangle(imS, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         if side1 > side2:
             aspect_ratio = side2 / side1
@@ -93,36 +102,54 @@ def capture_image():
             aspect_ratio = side1 / side2
         print(f"aspect ratio {i}: {aspect_ratio}")
 
-        # Put the width and height text above the bounding box
+        # Pattern Recognition
+
         text = None
         if i in ring_of_bout_array:
-            text = f"ring of bout: {i}"
             area = cv2.contourArea(contour)
+            if area > 4000:
+                text = f"ring: {i}"
+                ringAmount += 1
+            elif area > 2000:
+                text = f"bout: {i}"
+                boutAmount += 1
+
             print(f"Contour {i} area: {area}")
+
+        # Detect schroef en spijker
         elif i in schroef_of_spijker_array:
-            text = f"schroef of spijker: {i}"
-        cv2.putText(imS, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+            # Spijker
+            if aspect_ratio < 0.1:
+                spijkerAmount += 1
+                text = f"spijker: {i}"    
+            # Schroef
+            elif aspect_ratio < 0.4:
+                schroefAmount += 1
+                text = f"schroef: {i}"
 
-        # if i in isChild_array:
-        #     area = cv2.contourArea(contour)
-        #     print(f"Contour {i} area: {area}")
+        # Display text in center of rectangle around item.
+        center_x = x + w // 2
+        center_y = y + h // 2
 
-        # Print hierarchy information
-        # print(f"Contour {i} hierarchy: {hierarchy[0][i]}")
+        (text_width, text_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+
+        text_x = center_x - text_width // 2
+        text_y = center_y + text_height // 2
+
+        cv2.putText(imS, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, .8, (0, 0, 255), 2, cv2.LINE_AA)
 
     # Display the image with bounding boxes
     cv2.imshow('Bounding Boxes', imS)
 
-
+    print(f"spijker amount: {spijkerAmount}")
+    print(f"schroef amount: {schroefAmount}")
+    print(f"bout amount: {boutAmount}")
+    print(f"ring amount: {ringAmount}")
 
 
     # Wait for a key press and close the window
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-def id_ring_or_moer(childNr):
-    if(childNr == -1):
-        return
     
 
     
