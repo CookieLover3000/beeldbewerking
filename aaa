@@ -1,0 +1,146 @@
+Basler puA2500-14uc (22860627)
+  Analog Control                        
+    Gain Selector                       	All
+    Gain [dB]                           	7.04365
+    Gain Auto                           	Off
+    Auto Gain Lower Limit [dB]          	0
+    Auto Gain Upper Limit [dB]          	23.8066
+    Black Level Selector                	All
+    Black Level [DN]                    	0
+    Gamma                               	2
+    Color Space Mode                    	RGB
+  Image Format Control                  
+    Sensor Width                        	2592
+    Sensor Height                       	1944
+    Width Max                           	2592
+    Height Max                          	1944
+    Width                               	2592
+    Height                              	1944
+    Offset X                            	0
+    Offset Y                            	0
+    Binning Horizontal Mode             	Sum
+    Binning Horizontal                  	1
+    Binning Vertical Mode               	Average
+    Binning Vertical                    	1
+    Reverse X                           	0
+    Reverse Y                           	0
+    Pixel Format                        	YCbCr422_8
+    Pixel Size                          	Bpp16
+    Pixel Color Filter                  	None
+    Pixel Dynamic Range Min             	0
+    Pixel Dynamic Range Max             	255
+    Test Pattern                        	Off
+  Acquisition Control                   
+    Sensor Shutter Mode                 	Rolling
+    Overlap Mode                        	On
+    Immediate Trigger Mode              	Off
+    Exposure Time [us]                  	20000
+    Exposure Auto                       	Off
+    Auto Exposure Time Lower Limit [us] 	100
+    Auto Exposure Time Upper Limit [us] 	100000
+    Trigger Selector                    	FrameStart
+    Trigger Mode                        	Off
+    Trigger Software                    	<not readable>
+    Trigger Source                      	Software
+    Trigger Activation                  	RisingEdge
+    Exposure Mode                       	Timed
+    Acquisition Frame Rate [Hz]         	10
+    Resulting Frame Rate [Hz]           	10
+  Image Quality Control                 
+    Light Source Preset                 	Daylight6500K
+    Balance White Auto                  	Off
+    Balance Ratio Selector              	Red
+    Balance Ratio                       	1
+    Hue                                 	0
+    Saturation                          	1
+    Contrast Mode                       	Linear
+    Brightness                          	0
+    Contrast                            	0
+    Sharpness Enhancement               	0
+    Defect Pixel Correction Mode        	On
+  Auto Function Control                 
+    Target Brightness                   	0.3
+    Brightness Adjustment Damping       	0.3
+    Backlight Compensation              	0
+    Auto Function Profile               	Smart
+    Auto Function ROI Control           
+      ROI Selector                      	ROI1
+      Width                             	2592
+      Height                            	1944
+      Offset X                          	0
+      Offset Y                          	0
+      Brightness                        	1
+      White Balance                     	0
+  User Set Control                      
+    User Set Selector                   	Default
+    User Set Load                       	<not readable>
+    User Set Save                       	<not readable>
+    User Set Default                    	Default
+  Test Control                          
+    Test Pending Ack [ms]               	0
+  Transport Layer Control               
+    Payload Size [B]                    	10077696
+    USB Speed Mode                      	SuperSpeed
+    Payload Transfer Size               	262144
+    Payload Transfer Count              	38
+    Payload Final Transfer 1 Size       	116224
+    Payload Final Transfer 2 Size       	0
+  Device Control                        
+    Device Vendor Name                  	Basler
+    Device Model Name                   	puA2500-14uc
+    Device Manufacturer Info            	dtx=xa3
+    Device Version                      	106958-12
+    Device Firmware Version             	p=puA2500_14uc/s=r/v=1.5.1.361201/h=0a4bb46
+    Device Serial Number                	22860627
+    Device User ID                      	
+    Device Scan Type                    	Areascan
+    Device SFNC Version Major           	2
+    Device SFNC Version Minor           	2
+    Device SFNC Version Sub Minor       	0
+    Device Reset                        	<not readable>
+    Device Link Selector                	0
+    Device Link Speed [Bps]             	500000000
+    Device Link Throughput Limit Mode   	On
+    Device Link Throughput Limit [Bps]  	163000000
+    Device Registers Streaming Start    	<not readable>
+    Device Registers Streaming End      	<not readable>
+Stream Parameters
+  Maximum Number of Buffers             	16
+  Maximum Buffer Size                   	131072
+  Maximum Transfer Size                 	262144
+  Num Max Queued Urbs                   	64
+  Transfer Loop Thread Priority         	0
+  Statistic                             
+    Total Buffer Count                  	0
+    Failed Buffer Count                 	0
+    Last Failed Buffer Status           	0
+    Status code of the last failed buffer.	
+    Missed Frame Count                  	0
+    Resynchronization Count             	0
+    Last Block Id                       	0
+    Out Of Memory Error Count           	0
+Device Transport Layer
+  Migration Mode Enable                 	0
+  Statistic                             
+    Read Pipe Reset Count               	0
+    Write Pipe Reset Count              	0
+    Read Operations Failed Count        	1
+    Write Operations Failed Count       	0
+    Last Error Status                   	0xe2300202
+    Last Error Status Text              	
+Event Grabber Parameters
+  NumBuffer                             	20
+  Num Max Queued Urbs                   	5
+  Transfer Loop Thread Priority         	0
+  Statistic                             
+    Total Event Count                   	0
+    Failed Event Count                  	0
+    Last Failed Event Buffer Status     	0
+Image Format Conversion
+  Output Bit Alignment                  	MsbAligned
+  Output Orientation                    	Unchanged
+  Mono Conversion                       
+    Mono Conversion Method              	Truncate
+    Gamma                               	<not available>
+    Additional Left Shift               	0
+  Maximum Number Of Threads             	1
