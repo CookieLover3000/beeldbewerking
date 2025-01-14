@@ -13,7 +13,7 @@ import cv2 # type: ignore
 import time
 import numpy as np
 
-ring_of_bout_array = []
+ring_of_moer_array = []
 schroef_of_spijker_array = []
 
 shouldSaveImage = False
@@ -109,7 +109,7 @@ while camera.IsGrabbing():
 
         for i, h in enumerate(hierarchy[0]):
             if h[3] != -1:
-               ring_of_bout_array.append(i)
+               ring_of_moer_array.append(i)
             elif h[3] == -1 and h[2] == -1:
                 schroef_of_spijker_array.append(i)
             # else:
@@ -120,7 +120,7 @@ while camera.IsGrabbing():
         spijkerAmount = 0
         schroefAmount = 0
         ringAmount = 0
-        boutAmount = 0
+        moerAmount = 0
 
             # !!!!!! Didn´t work because it doesn´t work with objects that aren´t vertical or horizontal !!!!!!!!!!!!
             # Loop over contours and draw bounding boxes
@@ -155,21 +155,21 @@ while camera.IsGrabbing():
             # Pattern Recognition
 
             text = None
-            if i in ring_of_bout_array:
+            if i in ring_of_moer_array:
                 area = cv2.contourArea(contour)
-                if area > 4000:
+                if area > 2600:
                     text = f"ring: {i}"
                     ringAmount += 1
-                elif area > 2000:
-                    text = f"bout: {i}"
-                    boutAmount += 1
+                elif area > 1000:
+                    text = f"moer: {i}"
+                    moerAmount += 1
 
                 print(f"Contour {i} area: {area}")
 
             # Detect schroef en spijker
             elif i in schroef_of_spijker_array:
                 # Spijker
-                if aspect_ratio < 0.1:
+                if aspect_ratio < 0.15:
                     spijkerAmount += 1
                     text = f"spijker: {i}"    
                 # Schroef
@@ -193,10 +193,10 @@ while camera.IsGrabbing():
 
         print(f"spijker amount: {spijkerAmount}")
         print(f"schroef amount: {schroefAmount}")
-        print(f"bout amount: {boutAmount}")
+        print(f"moer amount: {moerAmount}")
         print(f"ring amount: {ringAmount}")
 
-        ring_of_bout_array = []
+        ring_of_moer_array = []
         schroef_of_spijker_array = []
 
 
