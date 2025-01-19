@@ -1,13 +1,44 @@
-'''
-A simple Program for grabbing video from basler camera and converting it to opencv img.
-Uitleg Gert: 
-Gebruik de Pylon Viewer om namen van parameters op te zoeken.
-Voor python is er geen directe API. Hier staan de sources: https://github.com/basler/pypylon
-Zorg dat je in Baslerweb deze camera ingesteld hebt: https://docs.baslerweb.com/pua2500-14uc
-Dan kun je een poging doen om te zoeken in de C++ API: https://docs.baslerweb.com/pylonapi/
+# Beeldbewerking
 
-'''
+Dit document beschrijft de stappen die ik heb genomen om de bouten, ringen, schroeven en spijkers van elkaar te onderscheiden in het practicum van beeldbewerking.
 
+## De stappen
+
+### Stap 1: Acquisitie
+
+In deze stap wordt zowel de hardware als de software van de camera zo samengesteld om het zo makkelijk mogelijk te maken om het gereedschap te splitsen van de achtergrond. Hiervoor was het belangrijk om een goede donkere achtergrond te gebruiken. Het beste dat ik hiervoor heb gevonden is een zwarte laptophoes. 
+
+Hierna heb ik de camera scherpgesteld en de exposure, gamma en gain van de camera zo hoog mogelijk gezet. Dit is om de objecten zoveel mogelijk te scheiden van de achtergrond in deze eerste stap.
+
+### Stap 2: Enhancement
+
+In deze stap zet ik het beeld om naar grayscale en voeg ik een gaussian blur toe om het segmenteren zo makkelijk mogelijk te maken. De blur gebruikt een 7x7 kernel omdat dit het beste resultaat gaf tussen detail en het weghalen van gaten in de latere stappen.
+
+### Stap 3: Segmentatie
+
+Deze stap begint met een otsu threshold die het gereedschap scheidt van de achtergrond. Hierna wordt een kleine erosie gedaan met een 3x3 kernel en drie grote dilaties met een 9x9 kernel. Dit wordt zo gedaan om de bout met de blauwe ring goed weer te geven als één object.
+
+### Stap 4: Feature Extraction
+
+In deze stap vind ik de hoogte en breedte van alle objecten aan de hand van bounding boxes. Dit wordt gedaan met `cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)`. Deze hoogte en breedte worden gebruikt voor het bereken van de aspect ratio van een object.
+
+### Stap 5: Pattern recognition
+
+De pattern recognition begint met het scheiden van de schroeven/spijkers en de ringen/bouten. Dit wordt gedaan door het controleren of een bounding box een parent heeft, zo ja dan is het een ring/bout. Zo nee, als het geen child heeft dan is het een schroef/spijker.
+
+Met het aspect ratio van de objecten die in de vorige stap zijn uitgerekend kan er worden onderscheiden of een object een schroef of een spijker is. Een aspect ratio van kleiner dan 0.1 is een spijker. Kleiner dan 0.4 is een schroef. 
+
+Aspect ratio kan alleen niet gebruikt worden voor de ringen en bouten doordat deze allebei ongeveer hetzelfde aspect ratio hebben. Om deze reden gebruik ik daarvoor de area van de inner bounding box. De area van de bout is namelijk kleiner dan de area van de ring. Het nadeel aan deze techniek is wel dat als een camera op een andere afstand wordt gezet dan wanneer de waardes in de code worden gezet deze niet meer kloppen en aangepast moeten worden.
+
+## Resultaat
+
+Na al deze stappen ziet het uiteindelijke resultaat er als volgt uit:
+
+![afbeelding met 2 bouten, 1 ring, 1 spijker en 1 schroef waar een bounding box omheen zit](image-1.png)
+
+## Code
+
+```python
 from pypylon import pylon # type: ignore
 import cv2 # type: ignore
 import time
@@ -42,7 +73,6 @@ camera.GainAuto.SetValue('Off')
 camera.GainRaw.Value = 127
 camera.GammaRaw.Value = 2000
 camera.PixelFormat = "RGB8"
-# pylon.FeaturePersistence.Save("test.txt", camera.GetNodeMap())
 
 print("Using device: ", camera.GetDeviceInfo().GetModelName())
 print("width set: ",camera.Width.Value)
@@ -73,13 +103,9 @@ while camera.IsGrabbing():
         if(savingImage == False and shouldSaveImage == True):
             cv2.imwrite('output_image.bmp', img)
             savingImage = True
-
-        # do some image processing
-        # img = cv2.GaussianBlur(img, (65,65), 0)
         
         # Enhancement
 
-        # open the image in a window
         imS = cv2.resize(img, ((int)(camera.Width.Value/3),
                                (int)(camera.Height.Value/3)))
         cv2.namedWindow('camera', cv2.WINDOW_AUTOSIZE)
@@ -112,8 +138,6 @@ while camera.IsGrabbing():
                ring_of_moer_array.append(i)
             elif h[3] == -1 and h[2] == -1:
                 schroef_of_spijker_array.append(i)
-            # else:
-            #     isChild_array.append(i)
 
         # end Pattern recongition 1, continue with Feature extraction
 
@@ -138,11 +162,9 @@ while camera.IsGrabbing():
             side1 = np.linalg.norm(box[0] - box[1])
             side2 = np.linalg.norm(box[1] - box[2])
             # print(f"box: {box}")
-            # Draw the rotated bounding box (rectangle) using polylines
             cv2.drawContours(imS, [box], 0, (0,255,0), 3)
 
             x, y, w, h = cv2.boundingRect(contour)
-            # cv2.rectangle(imS, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
             if side1 > side2:
                 aspect_ratio = side2 / side1
@@ -207,3 +229,4 @@ while camera.IsGrabbing():
 # Releasing the resource
 camera.StopGrabbing()
 cv2.destroyAllWindows()
+```
